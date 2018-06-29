@@ -1,5 +1,10 @@
 import { AppRegistry } from 'react-native';
-import Login from './src/screens/Login';
-import Register from './src/screens/Register';
+import { Routes } from './src/routes/Routes';
+import { initFirebaseApi } from './src/services/FirebaseApi'
 
-AppRegistry.registerComponent('ToDoManager_TurmaA_2017', () => Register);
+AppRegistry.registerComponent('ToDoManager_TurmaA_2017',
+    () =>{
+        initFirebaseApi();
+        return Routes
+    } 
+);

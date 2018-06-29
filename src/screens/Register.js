@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
-import { SafeAreaView, StyleSheet, KeyboardAvoidingView, View, Image, Text, TextInput, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, KeyboardAvoidingView, View, Image, Text, TextInput, Button, Alert } from 'react-native';
+import { createUserFirebase } from '../services/FirebaseApi'
+import {Routes} from '../routes/Routes'
 
 const img = require('../assets/TodoList.png');
 
 export default class Register extends Component {
+    
+    static navigationOptions = {
+        title: 'Register'
+    };
 
     constructor(props) {
         super(props);
@@ -29,11 +35,25 @@ export default class Register extends Component {
                             secureTextEntry={true}
                             onChangeText={password => this.setState({ password })} />
                         <Button title='Register User'
-                            onPress={() => Alert.alert(`Email: ${this.state.email}\nPassword: ${this.state.password}`)} />
+                            onPress={ async () => await this.createUserAsync()} />
                     </View>
                 </KeyboardAvoidingView>
             </SafeAreaView>
         );
+    }
+
+    async createUserAsync(){
+        try {
+            const user = await createUserFirebase(
+                this.state.email,
+                this.state.password
+            );
+            const message = `User ${user.email} created`;
+            Alert.alert('User Created', message);
+            this.props.navigation.goBack();
+        } catch (error) {
+            Alert.alert('Create user failed', error.message);
+        }
     }
 
 }
