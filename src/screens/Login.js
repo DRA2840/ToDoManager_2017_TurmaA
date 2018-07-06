@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { SafeAreaView, KeyboardAvoidingView, StyleSheet, View, Image, TextInput, Button, Text, Alert } from 'react-native';
+import {StackActions, NavigationActions} from 'react-navigation';
+import { signInOnFirebase } from '../services/FirebaseApi';
 
 
 const img = require('../assets/TodoList.png');
@@ -42,7 +44,7 @@ export default class Login extends Component {
                             secureTextEntry={true}
                             onChangeText={(password) => this.setState({ password })} />
                         <Button title='Sign In'
-                            onPress={() => Alert.alert(`Email: ${this.state.email}\nPassword: ${this.state.password}`)} />
+                            onPress={ async () => await this.loginUserAsync()} />
                         <View style={styles.textConteiner}>
                             <Text>Not a member? Let's </Text>
                             <Text style={styles.textRegister}
@@ -54,6 +56,24 @@ export default class Login extends Component {
                 </KeyboardAvoidingView>
             </SafeAreaView>
         );
+    }
+
+    async loginUserAsync(){
+        try {
+            const user = await signInOnFirebase(
+                this.state.email,
+                this.state.password
+            );
+            const resetNavigation = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions
+                    .navigate({routeName: 'pageTaskList'})]
+            });
+            this.props.navigation.dispatch(resetNavigation)
+
+        } catch (error) {
+            Alert.alert('Login failed', error.message);
+        }
     }
 }
 
